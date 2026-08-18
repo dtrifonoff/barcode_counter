@@ -1,0 +1,22 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue background -->
+  <rect width="1024" height="1024" fill="#2196F3"/>
+  
+  <!-- White rounded rectangle background for barcode -->
+  <rect x="112" y="262" width="800" height="500" rx="40" fill="white"/>
+  
+  <!-- Barcode lines -->
+  <g fill="#2196F3">
+    <rect x="162" y="312" width="30" height="400"/>
+    <rect x="222" y="312" width="50" height="400"/>
+    <rect x="302" y="312" width="30" height="400"/>
+    <rect x="362" y="312" width="30" height="400"/>
+    <rect x="422" y="312" width="50" height="400"/>
+    <rect x="502" y="312" width="30" height="400"/>
+    <rect x="562" y="312" width="30" height="400"/>
+    <rect x="622" y="312" width="50" height="400"/>
+    <rect x="702" y="312" width="30" height="400"/>
+    <rect x="762" y="312" width="50" height="400"/>
+    <rect x="842" y="312" width="30" height="400"/>
+  </g>
+</svg>
