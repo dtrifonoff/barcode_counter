@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/session_provider.dart';
 import 'scanner_screen.dart';
 import 'history_screen.dart';
+import 'about_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,26 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Баркод инвентар'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Меню',
+            onSelected: (value) {
+              if (value == 'about') {
+                _openAbout(context);
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem<String>(
+                value: 'about',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.info_outline),
+                  title: Text('За приложението'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -147,6 +168,13 @@ class HomeScreen extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const HistoryScreen()),
+    );
+  }
+
+  void _openAbout(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AboutScreen()),
     );
   }
 }

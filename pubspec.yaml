@@ -62,6 +62,12 @@ dependencies:
   # Keep screen awake
   wakelock_plus: ^1.2.8
 
+  # Opening external links (Google Play)
+  url_launcher: ^6.3.1
+
+  # App version info for the About screen
+  package_info_plus: ^10.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
