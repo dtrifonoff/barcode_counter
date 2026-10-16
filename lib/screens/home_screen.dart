@@ -35,102 +35,116 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // App icon/logo placeholder
-              Icon(
-                Icons.qr_code_scanner,
-                size: 120,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 48),
-              
-              // New Request Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton.icon(
-                  onPressed: () => _startNewSession(context),
-                  icon: const Icon(Icons.add_circle_outline, size: 28),
-                  label: const Text(
-                    'Нова заявка',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        top: false,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // App icon/logo placeholder
+                Icon(
+                  Icons.qr_code_scanner,
+                  size: 120,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 48),
+
+                // New Request Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _startNewSession(context),
+                    icon: const Icon(Icons.add_circle_outline, size: 28),
+                    label: const Text(
+                      'Нова заявка',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Continue Current Session Button (only if active session exists)
-              Consumer<SessionProvider>(
-                builder: (context, sessionProvider, child) {
-                  if (!sessionProvider.hasActiveSession) {
-                    return const SizedBox.shrink();
-                  }
-                  
-                  return SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: OutlinedButton.icon(
-                      onPressed: () => _continueSession(context),
-                      icon: const Icon(Icons.play_arrow, size: 28),
-                      label: const Text(
-                        'Продължи текуща заявка',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+                const SizedBox(height: 16),
+
+                // Continue Current Session Button (only if active session exists)
+                Consumer<SessionProvider>(
+                  builder: (context, sessionProvider, child) {
+                    if (!sessionProvider.hasActiveSession) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _continueSession(context),
+                        icon: const Icon(Icons.play_arrow, size: 28),
+                        label: const Text(
+                          'Продължи текуща заявка',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.primary,
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                // History Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _openHistory(context),
+                    icon: const Icon(Icons.history, size: 28),
+                    label: const Text(
+                      'История',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                },
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // History Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton.icon(
-                  onPressed: () => _openHistory(context),
-                  icon: const Icon(Icons.history, size: 28),
-                  label: const Text(
-                    'История',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.secondary,
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary,
-                      width: 2,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.secondary,
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.secondary,
+                        width: 2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -139,7 +153,7 @@ class HomeScreen extends StatelessWidget {
 
   void _startNewSession(BuildContext context) async {
     final sessionProvider = context.read<SessionProvider>();
-    
+
     try {
       await sessionProvider.createNewSession();
       if (context.mounted) {

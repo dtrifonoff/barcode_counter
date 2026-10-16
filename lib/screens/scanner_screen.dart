@@ -29,9 +29,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
       BarcodeFormat.itf,
     ],
   );
-  final TextEditingController _quantityController = TextEditingController(text: '1');
+  final TextEditingController _quantityController = TextEditingController(
+    text: '1',
+  );
   final FocusNode _quantityFocusNode = FocusNode();
-  
+
   String? _currentBarcode;
   bool _isProcessing = false;
   bool _cameraPermissionGranted = false;
@@ -61,7 +63,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     } else {
       final result = await Permission.camera.request();
       setState(() => _cameraPermissionGranted = result.isGranted);
-      
+
       if (!result.isGranted) {
         if (mounted) {
           _showPermissionDeniedDialog();
@@ -75,7 +77,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Нужно е разрешение за камера'),
-        content: const Text('Приложението има нужда от достъп до камерата за сканиране на баркодове.'),
+        content: const Text(
+          'Приложението има нужда от достъп до камерата за сканиране на баркодове.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -108,7 +112,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
         _currentBarcode = code;
         _isProcessing = true;
       });
-      
+
       // Focus quantity field
       _quantityFocusNode.requestFocus();
       _quantityController.selection = TextSelection(
@@ -152,9 +156,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Грешка: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Грешка: $e')));
       }
       setState(() {
         _isProcessing = false;
@@ -184,11 +188,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   Future<void> _completeSession() async {
     final sessionProvider = context.read<SessionProvider>();
-    
+
     if (sessionProvider.currentItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Няма добавени артикули')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Няма добавени артикули')));
       return;
     }
 
@@ -197,9 +201,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
       await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => SessionDetailsScreen(
-            session: sessionProvider.currentSession!,
-          ),
+          builder: (context) =>
+              SessionDetailsScreen(session: sessionProvider.currentSession!),
         ),
       );
     }
@@ -219,213 +222,227 @@ class _ScannerScreenState extends State<ScannerScreen> {
           ),
         ],
       ),
-      body: !_cameraPermissionGranted
-          ? const Center(
-              child: Text('Няма разрешение за камера'),
-            )
-          : Column(
-              children: [
-                // Camera preview
-                Expanded(
-                  flex: 3,
-                  child: Stack(
-                    children: [
-                      MobileScanner(
-                        controller: _scannerController,
-                        onDetect: _onBarcodeDetected,
-                      ),
-                      // Overlay with scan guide
-                      Center(
-                        child: Container(
-                          width: 250,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.green, width: 3),
-                            borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        top: false,
+        child: !_cameraPermissionGranted
+            ? const Center(child: Text('Няма разрешение за камера'))
+            : Column(
+                children: [
+                  // Camera preview
+                  Expanded(
+                    flex: 3,
+                    child: Stack(
+                      children: [
+                        MobileScanner(
+                          controller: _scannerController,
+                          onDetect: _onBarcodeDetected,
+                        ),
+                        // Overlay with scan guide
+                        Center(
+                          child: Container(
+                            width: 250,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.green, width: 3),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                
-                // Barcode display and quantity input
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      // Current barcode display
-                      if (_currentBarcode != null) ...[
+
+                  // Barcode display and quantity input
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        // Current barcode display
+                        if (_currentBarcode != null) ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Баркод: $_currentBarcode',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: _cancelCurrentBarcode,
+                                icon: const Icon(Icons.cancel),
+                                color: Colors.red,
+                                tooltip: 'Отказ',
+                                iconSize: 28,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // Quantity input
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: Text(
-                                'Баркод: $_currentBarcode',
+                            const Text(
+                              'Количество:',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 12),
+                            IconButton(
+                              onPressed: _decrementQuantity,
+                              icon: const Icon(Icons.remove_circle_outline),
+                              iconSize: 32,
+                            ),
+                            SizedBox(
+                              width: 80,
+                              child: TextField(
+                                controller: _quantityController,
+                                focusNode: _quantityFocusNode,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 12,
+                                  ),
+                                ),
                               ),
                             ),
                             IconButton(
-                              onPressed: _cancelCurrentBarcode,
-                              icon: const Icon(Icons.cancel),
-                              color: Colors.red,
-                              tooltip: 'Отказ',
-                              iconSize: 28,
+                              onPressed: _incrementQuantity,
+                              icon: const Icon(Icons.add_circle_outline),
+                              iconSize: 32,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      
-                      // Quantity input
-                      Row(
-                        children: [
-                          const Text(
-                            'Количество:',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(width: 12),
-                          IconButton(
-                            onPressed: _decrementQuantity,
-                            icon: const Icon(Icons.remove_circle_outline),
-                            iconSize: 32,
-                          ),
-                          SizedBox(
-                            width: 80,
-                            child: TextField(
-                              controller: _quantityController,
-                              focusNode: _quantityFocusNode,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8,
+                            const Spacer(),
+                            ElevatedButton(
+                              onPressed: _currentBarcode != null
+                                  ? _addItem
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
                                   vertical: 12,
                                 ),
                               ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: _incrementQuantity,
-                            icon: const Icon(Icons.add_circle_outline),
-                            iconSize: 32,
-                          ),
-                          const Spacer(),
-                          ElevatedButton(
-                            onPressed: _currentBarcode != null ? _addItem : null,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
+                              child: const Text(
+                                'Добави',
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
-                            child: const Text(
-                              'Добави',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                
-                // Items list
-                Expanded(
-                  flex: 2,
-                  child: Consumer<SessionProvider>(
-                    builder: (context, sessionProvider, child) {
-                      final items = sessionProvider.currentItems;
-                      
-                      if (items.isEmpty) {
-                        return const Center(
-                          child: Text('Няма сканирани артикули'),
-                        );
-                      }
-                      
-                      return ListView.builder(
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          final item = items[index];
-                          return Dismissible(
-                            key: Key('item_${item.id}_$index'),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20),
-                              child: const Icon(Icons.delete, color: Colors.white),
-                            ),
-                            confirmDismiss: (direction) async {
-                              return await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Изтриване'),
-                                  content: Text('Изтриване на баркод ${item.barcode}?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: const Text('Не'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => Navigator.pop(context, true),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      child: const Text('Да'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            onDismissed: (direction) async {
-                              try {
-                                await sessionProvider.deleteItem(item.id!);
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Артикулът е изтрит')),
-                                  );
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Грешка: $e')),
-                                  );
-                                }
-                              }
-                            },
-                            child: ListTile(
-                              leading: const Icon(Icons.qr_code),
-                              title: Text(
-                                item.barcode,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              trailing: Text(
-                                'x ${item.quantity}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+
+                  // Items list
+                  Expanded(
+                    flex: 2,
+                    child: Consumer<SessionProvider>(
+                      builder: (context, sessionProvider, child) {
+                        final items = sessionProvider.currentItems;
+
+                        if (items.isEmpty) {
+                          return const Center(
+                            child: Text('Няма сканирани артикули'),
                           );
-                        },
-                      );
-                    },
+                        }
+
+                        return ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            return Dismissible(
+                              key: Key('item_${item.id}_$index'),
+                              direction: DismissDirection.endToStart,
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 20),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              confirmDismiss: (direction) async {
+                                return await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Изтриване'),
+                                    content: Text(
+                                      'Изтриване на баркод ${item.barcode}?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: const Text('Не'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                        ),
+                                        child: const Text('Да'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              onDismissed: (direction) async {
+                                try {
+                                  await sessionProvider.deleteItem(item.id!);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Артикулът е изтрит'),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Грешка: $e')),
+                                    );
+                                  }
+                                }
+                              },
+                              child: ListTile(
+                                leading: const Icon(Icons.qr_code),
+                                title: Text(
+                                  item.barcode,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                trailing: Text(
+                                  'x ${item.quantity}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }
